@@ -21,37 +21,55 @@ function App(){
   useEffect(async ()=>{
     await loadWeb3()
     await loadBlockchainData()
-  })
+  },[account])
   async function loadBlockchainData(){
-    
     const web3 = window.web3
     const accounts= await web3.eth.getAccounts()
-    const netId=await web3.eth.net.getId()
-    console.log(netId)
-    
+    setAccount(accounts[0])
+    const networkId = await web3.eth.net.getId()
     // Load daiToken
-    const daiTokenData=DaiToken.networks[netId]
-    if(daiTokenData){
-      const daiToken = new web3.eth.Contract(DaiToken.abi,daiTokenData.address)
+    const daiTokenData = DaiToken.networks[networkId]
+    if(daiTokenData) {
+     
+      const daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
       setDai(daiToken)
-      let daiTokenBalance=await daiToken.methods.balanceOf(account).call()
-      setDaiTokenBalance(daiTokenBalance)
-    }else{
-      window.alert('Dai Token contract not deployed to detected network')
+
+      if(account){
+        let daiTokenBalance = await daiToken.methods.balanceOf(account).call()
+      }
+      setDaiTokenBalance(daiTokenBalance.toString())
+    } else {
+      window.alert('DaiToken contract not deployed to detected network.')
     }
 
+
     //Load dappToken
-    const dappTokenData=DappToken.networks[netId]
+    const dappTokenData=DappToken.networks[networkId]
     if(dappTokenData){
       const dappToken = new web3.eth.Contract(DappToken.abi,dappTokenData.address)
       setDapp(dappToken)
+      if(account){
       let dappTokenBalance=await dappToken.methods.balanceOf(account).call()
+      }
       setDappTokenBalance(dappTokenBalance)
     }else{
       window.alert('Dapp Token contract not deployed to detected network')
     }
     
 
+    //Load TokenFarm
+    const tokenFarmData=DappToken.networks[networkId]
+    if(tokenFarmData){
+      const tokenFarm  = new web3.eth.Contract(TokenFarm.abi,tokenFarmData.address)
+      setDapp(tokenFarm)
+      if(account){
+      let stakingBalance=await tokenFarm.methods.stakingBalance(account).call()
+      }
+      setTokenFarmBalance(stakingBalance)
+    }else{
+      window.alert('TokenFarm  contract not deployed to detected network')
+    }
+    setloading(false)
   }
 
   async function loadWeb3() {
@@ -79,7 +97,7 @@ function App(){
             <div className="content mr-auto ml-auto">
            
 
-              <h1>DApp</h1>
+              <h1>Hello,World</h1>
 
             </div>
           </main>
